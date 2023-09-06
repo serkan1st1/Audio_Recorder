@@ -1,3 +1,4 @@
+import 'package:audio_recorder/services/auth_service.dart';
 import 'package:audio_recorder/utils/generalColors.dart';
 import 'package:audio_recorder/utils/generalTextStyle.dart';
 import 'package:flutter/material.dart';
@@ -47,6 +48,8 @@ class _LoginPageState extends State<LoginPage> {
                     signUpButton(),
                     generalSizedBox(),
                     signInButton(),
+                    generalSizedBox(),
+                    googleSignInButton(),
                   ],
                 ),
               )
@@ -123,6 +126,19 @@ class _LoginPageState extends State<LoginPage> {
             child: generalText("Giriş Yap", GeneralColors.loginButtonTextColor),
           ),
         ),
+      ),
+    );
+  }
+
+  Center googleSignInButton() {
+    return Center(
+      child: InkWell(
+        onTap: () {
+          AuthService().signInWithGoogle().then(
+                (value) => Navigator.pushNamed(context, "/audioRecord"),
+              );
+        },
+        child: Image.asset('assets/images/google.png'),
       ),
     );
   }

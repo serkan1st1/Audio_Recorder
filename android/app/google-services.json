@@ -14,7 +14,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "263821000282-87bh31vaa3is836id88uhkbo3uqrtsd0.apps.googleusercontent.com",
+          "client_id": "263821000282-p5is2b3d5mg9ov8evbr2mair0ehrjcjt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.audio_recorder",
+            "certificate_hash": "a52291c534f795799272b76807b601345b4443a5"
+          }
+        },
+        {
+          "client_id": "263821000282-9d2krtp0v7h2cgcckt0er9e2sofaim47.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -29,6 +37,13 @@
             {
               "client_id": "263821000282-87bh31vaa3is836id88uhkbo3uqrtsd0.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "263821000282-vbieeu5puj6u1mp0eoak2hakbr5ifqe6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.audioRecorder"
+              }
             }
           ]
         }
