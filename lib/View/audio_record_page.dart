@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'package:audio_recorder/services/record_cstore_service.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:record/record.dart';
 import 'package:audioplayers/audioplayers.dart';
 
@@ -13,6 +15,10 @@ class AudioRecordPage extends StatefulWidget {
 }
 
 class _AudioRecordPageState extends State<AudioRecordPage> {
+  RecordService _recordService = RecordService();
+
+  String personn = "Person Deneme";
+
   late Record audioRecord;
   late AudioPlayer audioPlayer;
   bool isRecording = false;
@@ -80,6 +86,14 @@ class _AudioRecordPageState extends State<AudioRecordPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                _recordService.addRecord(personn, audioPath).then((value) {
+                  Fluttertoast.showToast(msg: "Sesiniz eklendi.");
+                });
+              },
+              child: const Text('Ekle'),
+            ),
             if (isRecording)
               const Text(
                 'Recording in Progress',
