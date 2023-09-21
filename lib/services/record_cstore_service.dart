@@ -29,4 +29,10 @@ class RecordService {
   }
 
   Text ErrorTitle() => const Text("Hata");
+
+  //Data
+  Stream<QuerySnapshot> getRecords() {
+    var ref = _firestore.collection("Records").snapshots();
+    return ref;
+  }
 }

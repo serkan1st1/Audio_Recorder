@@ -2,6 +2,7 @@ import 'package:audio_recorder/View/audio_record_page.dart';
 import 'package:audio_recorder/View/sign_up_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'View/home_screen.dart';
 import 'View/login_page.dart';
 import 'firebase_options.dart';
 
@@ -20,17 +21,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       routes: {
         "/loginPage": (context) => LoginPage(),
         "/signUp": (context) => SignUpPage(),
-        "/audioRecord": (context) => AudioRecordPage(
-              title: 'Ses Kaydet',
-            ),
+        "/audioRecord": (context) => AudioRecordPage(),
       },
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: LoginPage(),
+      home: HomeScreen(),
     );
   }
 }

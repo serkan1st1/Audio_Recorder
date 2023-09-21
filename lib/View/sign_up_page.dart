@@ -114,25 +114,7 @@ class _SignUpPageState extends State<SignUpPage> {
   Center signUpButton() {
     return Center(
       child: TextButton(
-        onPressed: () async {
-          if (formKey.currentState!.validate()) {
-            formKey.currentState!.save();
-            try {
-              var userResult =
-                  await firebaseAuth.createUserWithEmailAndPassword(
-                      email: email, password: password);
-              formKey.currentState!.reset();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text("Giriş Yapıldı."),
-                ),
-              );
-              Navigator.pushNamed(context, "/audioRecord");
-            } catch (e) {
-              print(e.toString());
-            }
-          }
-        },
+        onPressed: CreateUser,
         child: Container(
           height: 50,
           width: 150,
@@ -147,6 +129,25 @@ class _SignUpPageState extends State<SignUpPage> {
         ),
       ),
     );
+  }
+
+  void CreateUser() async {
+    if (formKey.currentState!.validate()) {
+      formKey.currentState!.save();
+      try {
+        var userResult = await firebaseAuth.createUserWithEmailAndPassword(
+            email: email, password: password);
+        formKey.currentState!.reset();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Giriş Yapıldı."),
+          ),
+        );
+        Navigator.pushNamed(context, "/audioRecord");
+      } catch (e) {
+        print(e.toString());
+      }
+    }
   }
 
   Widget generalSizedBox() => const SizedBox(

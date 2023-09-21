@@ -1,6 +1,7 @@
 import 'package:audio_recorder/services/auth_service.dart';
 import 'package:audio_recorder/utils/generalColors.dart';
 import 'package:audio_recorder/utils/generalTextStyle.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -13,6 +14,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   late String email, password;
 
   @override
@@ -113,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
   Center signInButton() {
     return Center(
       child: TextButton(
-        onPressed: () {},
+        onPressed: () => signIn(),
         child: Container(
           height: 50,
           width: 150,
@@ -128,6 +131,37 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  Future<void> signIn() async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      if (userCredential.user != null) {
+        Navigator.pushNamed(context, "/audioRecord");
+      }
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('Email or password is incorrect'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Okey'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   Center googleSignInButton() {
