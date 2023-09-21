@@ -10,4 +10,12 @@ class ListeningToAudio {
       print('Error playin Recording : $e');
     }
   }
+
+  Future<void> stopAudio() async {
+    try {
+      await audioPlayer.setReleaseMode(ReleaseMode.release);
+    } catch (e) {
+      print('Error playin Recording : $e');
+    }
+  }
 }

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../services//listeningto_audio.dart';
 
-class AudioListCard extends StatelessWidget {
+class AudioListCard extends StatefulWidget {
   const AudioListCard({
     super.key,
     required this.mypost,
@@ -10,6 +10,12 @@ class AudioListCard extends StatelessWidget {
 
   final DocumentSnapshot<Object?> mypost;
 
+  @override
+  State<AudioListCard> createState() => _AudioListCardState();
+}
+
+class _AudioListCardState extends State<AudioListCard> {
+  bool isPlaying = false;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -38,7 +44,7 @@ class AudioListCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "${mypost['person']}",
+                  "${widget.mypost['person']}",
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                       fontWeight: FontWeight.bold, color: Colors.white),
                 ),
@@ -46,9 +52,27 @@ class AudioListCard extends StatelessWidget {
             ),
           ),
           IconButton(
-            onPressed: () => ListeningToAudio().playLinkAudio(mypost['audio']),
+            onPressed: () {
+              setState(() {
+                isPlaying = !isPlaying;
+              });
+              if (isPlaying) {
+                // Ses çalma işlemini başlat
+                ListeningToAudio()
+                    .playLinkAudio(widget.mypost['audio'])
+                    .then((_) {
+                  setState(() {
+                    isPlaying =
+                        false; // Ses çalma bittiğinde ikonu tekrar değiştir
+                  });
+                });
+              } else {
+                // Ses çalma işlemini durdur
+                ListeningToAudio().stopAudio();
+              }
+            },
             icon: Icon(
-              Icons.play_circle,
+              isPlaying ? Icons.pause_circle : Icons.play_circle,
               color: Colors.white,
             ),
           ),
