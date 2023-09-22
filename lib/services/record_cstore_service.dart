@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:audio_recorder/model/records.dart';
 import 'package:audio_recorder/services/storage_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,25 +9,25 @@ class RecordService {
   StorageService _storageService = StorageService();
   String mediaUrl = "";
 
-  Future<RecordModel> addRecord(String person, String audio) async {
+  Future<RecordModel> addRecord(String date, String audio) async {
     var ref = _firestore.collection("Records");
 
     if (audio == null) {
       AlertDialog alert = AlertDialog(
         title: ErrorTitle(),
-        content:
-            const Text("Ses dosyası bulunamadı.Tekrar kayıt yapmayı deneyin."),
+        content: ErrorContents(),
       );
     } else {
       mediaUrl = await _storageService.uploadAudio(File(audio));
     }
 
-    var documentRef = await ref.add({'person': person, 'audio': mediaUrl});
+    var documentRef = await ref.add({'date': date, 'audio': mediaUrl});
 
-    return RecordModel(id: documentRef.id, person: person, audio: mediaUrl);
+    return RecordModel(id: documentRef.id, date: date, audio: mediaUrl);
   }
 
-  Text ErrorTitle() => const Text("Hata");
+  Text ErrorTitle() => const Text("Error");
+  Text ErrorContents() => const Text("File not found.");
 
   //Data
   Stream<QuerySnapshot> getRecords() {

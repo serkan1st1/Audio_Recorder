@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:audio_recorder/services/record_cstore_service.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,8 @@ import 'package:record/record.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:audio_recorder/utils/generalColors.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+
+import '../utils/date_now.dart';
 
 enum AudioState { begin, recording, stop, play }
 
@@ -18,7 +21,6 @@ class AudioRecordPage extends StatefulWidget {
 class _AudioRecordPageState extends State<AudioRecordPage> {
   RecordService _recordService = RecordService();
 
-  String personn = "Person Deneme";
   AudioState audioState = AudioState.begin;
   late Record audioRecord;
   late AudioPlayer audioPlayer;
@@ -38,26 +40,35 @@ class _AudioRecordPageState extends State<AudioRecordPage> {
     super.dispose();
   }
 
-  void handleAudioState(AudioState state) {
+//recording and listening to Audio
+  void handleAudioStateOperation(AudioState state) async {
     setState(() {
       if (audioState == AudioState.begin) {
-        // Starts recording
+        //Start voice recording
         audioState = AudioState.recording;
         startRecording();
-        // Finished recording
       } else if (audioState == AudioState.recording) {
+        //Stop voice recording
         audioState = AudioState.play;
         stopRecording();
-        // Play recorded audio
       } else if (audioState == AudioState.play) {
+        //Listen to the recording
         audioState = AudioState.stop;
-        playAudio().then((_) {
-          setState(() => audioState = AudioState.play);
-        });
-        // Stop recorded audio
+        try {
+          Source urlSource = DeviceFileSource(audioPath);
+          audioPlayer.play(urlSource);
+          audioPlayer.onPlayerComplete.listen((duration) {
+            setState(() {
+              audioState = AudioState.play;
+            });
+          });
+        } catch (e) {
+          print('Error playin Recording : $e');
+        }
       } else if (audioState == AudioState.stop) {
+        //Stop listening
         audioState = AudioState.play;
-        stopAudio();
+        audioPlayer.stop();
       }
     });
   }
@@ -83,24 +94,6 @@ class _AudioRecordPageState extends State<AudioRecordPage> {
     }
   }
 
-  Future<void> playAudio() async {
-    try {
-      Source urlSource = DeviceFileSource(audioPath);
-      print('$audioPath');
-      await audioPlayer.play(urlSource);
-    } catch (e) {
-      print('Error playin Recording : $e');
-    }
-  }
-
-  Future<void> stopAudio() async {
-    try {
-      await audioPlayer.setReleaseMode(ReleaseMode.release);
-    } catch (e) {
-      print('Error playin Recording : $e');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -121,7 +114,7 @@ class _AudioRecordPageState extends State<AudioRecordPage> {
                   fillColor: Colors.white,
                   shape: CircleBorder(),
                   padding: EdgeInsets.all(30),
-                  onPressed: () => handleAudioState(audioState),
+                  onPressed: () => handleAudioStateOperation(audioState),
                   child: getIcon(audioState),
                 ),
               ),
@@ -163,9 +156,12 @@ class _AudioRecordPageState extends State<AudioRecordPage> {
                     padding: EdgeInsets.all(20),
                     onPressed: () {
                       _recordService
-                          .addRecord(personn, audioPath)
+                          .addRecord(TimeNow, audioPath)
                           .then((value) {
                         Fluttertoast.showToast(msg: "Successful");
+                      });
+                      setState(() {
+                        audioState = AudioState.begin;
                       });
                     },
                     child: Icon(Icons.save, size: 50),

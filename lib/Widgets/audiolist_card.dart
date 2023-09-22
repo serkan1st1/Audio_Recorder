@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../services//listeningto_audio.dart';
@@ -15,6 +16,8 @@ class AudioListCard extends StatefulWidget {
 }
 
 class _AudioListCardState extends State<AudioListCard> {
+  AudioPlayer audioPlayer = AudioPlayer();
+
   bool isPlaying = false;
   @override
   Widget build(BuildContext context) {
@@ -44,7 +47,7 @@ class _AudioListCardState extends State<AudioListCard> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "${widget.mypost['person']}",
+                  "${widget.mypost['date']}",
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                       fontWeight: FontWeight.bold, color: Colors.white),
                 ),
@@ -57,18 +60,22 @@ class _AudioListCardState extends State<AudioListCard> {
                 isPlaying = !isPlaying;
               });
               if (isPlaying) {
-                // Ses çalma işlemini başlat
-                ListeningToAudio()
-                    .playLinkAudio(widget.mypost['audio'])
-                    .then((_) {
-                  setState(() {
-                    isPlaying =
-                        false; // Ses çalma bittiğinde ikonu tekrar değiştir
+                try {
+                  audioPlayer.play(UrlSource(widget.mypost['audio']));
+                  audioPlayer.onPlayerComplete.listen((duration) {
+                    setState(() {
+                      isPlaying = false;
+                    });
                   });
-                });
+                } catch (e) {
+                  print('Error playin Recording : $e');
+                }
               } else {
-                // Ses çalma işlemini durdur
-                ListeningToAudio().stopAudio();
+                try {
+                  audioPlayer.stop();
+                } catch (e) {
+                  print('Error playin Recording : $e');
+                }
               }
             },
             icon: Icon(
