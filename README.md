@@ -4,4 +4,4 @@ You can record your voice with this application. You can listen to the recorded 
 
 
 
-**In this application, user management was done using firebase.**
+In this application, user management was done using **Firebase.**
