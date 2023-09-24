@@ -1,7 +1,8 @@
+import 'package:audio_recorder/services/i_auth_service.dart';
 import 'package:audio_recorder/utils/generalColors.dart';
 import 'package:audio_recorder/utils/generalTextStyle.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -13,7 +14,6 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   late String email, password;
   final formKey = GlobalKey<FormState>();
-  final firebaseAuth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +63,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
   Text titleText() {
     return const Text(
-      "Hesap Oluştur",
+      "Create User",
       style: GeneralTextStyle.titleTextStyle,
     );
   }
@@ -72,7 +72,7 @@ class _SignUpPageState extends State<SignUpPage> {
     return TextFormField(
       validator: (value) {
         if (value!.isEmpty) {
-          return "Bilgileri Eksiksiz Doldurunuz";
+          return "Email can't be blank ";
         }
       },
       onSaved: (value) {
@@ -87,7 +87,7 @@ class _SignUpPageState extends State<SignUpPage> {
     return TextFormField(
       validator: (value) {
         if (value!.isEmpty) {
-          return "Bilgileri Eksiksiz Doldurunuz";
+          return "Password can't be blank";
         }
       },
       onSaved: (value) {
@@ -95,7 +95,7 @@ class _SignUpPageState extends State<SignUpPage> {
       },
       obscureText: true,
       style: TextStyle(color: Colors.white),
-      decoration: generalInputDecoration("Şifre"),
+      decoration: generalInputDecoration("Password"),
     );
   }
 
@@ -104,7 +104,7 @@ class _SignUpPageState extends State<SignUpPage> {
       child: TextButton(
         onPressed: () => Navigator.pushNamed(context, "/loginPage"),
         child: generalText(
-          "Geri Dön",
+          "Turn Back",
           GeneralColors.textButtonColor,
         ),
       ),
@@ -112,9 +112,12 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Center signUpButton() {
+    final authService = Provider.of<IAuthService>(context, listen: false);
     return Center(
       child: TextButton(
-        onPressed: CreateUser,
+        onPressed: () {
+          CreateUser(authService);
+        },
         child: Container(
           height: 50,
           width: 150,
@@ -124,26 +127,25 @@ class _SignUpPageState extends State<SignUpPage> {
             color: Color(0xff31274F),
           ),
           child: Center(
-            child: generalText("Kayıt Ol", GeneralColors.loginButtonTextColor),
+            child: generalText("Sign Up", GeneralColors.loginButtonTextColor),
           ),
         ),
       ),
     );
   }
 
-  void CreateUser() async {
+  void CreateUser(IAuthService authService) async {
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
       try {
-        var userResult = await firebaseAuth.createUserWithEmailAndPassword(
+        await authService.createUserEmailAndPassword(
             email: email, password: password);
         formKey.currentState!.reset();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Giriş Yapıldı."),
+            content: Text("Welcome"),
           ),
         );
-        Navigator.pushNamed(context, "/audioRecord");
       } catch (e) {
         print(e.toString());
       }

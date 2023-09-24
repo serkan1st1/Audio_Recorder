@@ -1,4 +1,5 @@
 import 'package:audio_recorder/View/audio_record_page.dart';
+import 'package:audio_recorder/View/user_profile_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
@@ -6,17 +7,18 @@ import '../Widgets/widgets.dart';
 import '../services/record_cstore_service.dart';
 import '../utils/generalTextStyle.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomePage extends StatefulWidget {
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomePageState extends State<HomePage> {
   int pageIndex = 0;
 
   final List<Widget> _pages = [
     HomeListPage(),
     AudioRecordPage(),
+    UserProfile()
   ];
 
   void onPageChanged(int index) {

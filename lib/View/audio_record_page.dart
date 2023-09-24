@@ -154,8 +154,8 @@ class _AudioRecordPageState extends State<AudioRecordPage> {
                     fillColor: Colors.white,
                     shape: CircleBorder(),
                     padding: EdgeInsets.all(20),
-                    onPressed: () {
-                      _recordService
+                    onPressed: () async {
+                      await _recordService
                           .addRecord(TimeNow, audioPath)
                           .then((value) {
                         Fluttertoast.showToast(msg: "Successful");

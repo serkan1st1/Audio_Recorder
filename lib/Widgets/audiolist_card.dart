@@ -1,7 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../services//listeningto_audio.dart';
 
 class AudioListCard extends StatefulWidget {
   const AudioListCard({
@@ -34,8 +33,8 @@ class _AudioListCardState extends State<AudioListCard> {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(20.0),
-            child: Image.network(
-              'https://images.macrumors.com/t/vMbr05RQ60tz7V_zS5UEO9SbGR0=/1600x900/smart/article-new/2018/05/apple-music-note.jpg',
+            child: Image.asset(
+              'assets/images/voice.jpg',
               height: 50,
               width: 50,
             ),

@@ -1,10 +1,10 @@
-import 'package:audio_recorder/services/auth_service.dart';
+import 'package:audio_recorder/services/google_service.dart';
 import 'package:audio_recorder/utils/generalColors.dart';
 import 'package:audio_recorder/utils/generalTextStyle.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:provider/provider.dart';
+
+import '../services/i_auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,9 +14,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  late String email, password;
+  late String Email, Password;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -39,21 +38,24 @@ class _LoginPageState extends State<LoginPage> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    titleText(),
-                    generalSizedBox(),
-                    emailTextField(),
-                    generalSizedBox(),
-                    passwordTextField(),
-                    generalSizedBox(),
-                    signUpButton(),
-                    generalSizedBox(),
-                    signInButton(),
-                    generalSizedBox(),
-                    googleSignInButton(),
-                  ],
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      titleText(),
+                      generalSizedBox(),
+                      emailTextField(),
+                      generalSizedBox(),
+                      passwordTextField(),
+                      generalSizedBox(),
+                      signUpButton(),
+                      generalSizedBox(),
+                      signInButton(),
+                      generalSizedBox(),
+                      googleSignInButton(),
+                    ],
+                  ),
                 ),
               )
             ],
@@ -65,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Text titleText() {
     return const Text(
-      "Merhaba,\nHoşgeldin",
+      "Hi,\nWelcome",
       style: GeneralTextStyle.titleTextStyle,
     );
   }
@@ -74,11 +76,11 @@ class _LoginPageState extends State<LoginPage> {
     return TextFormField(
       validator: (value) {
         if (value!.isEmpty) {
-          return "Bilgileri Eksiksiz Doldurunuz";
+          return "Email can't be black";
         }
       },
       onSaved: (value) {
-        email = value!;
+        Email = value!;
       },
       style: TextStyle(color: Colors.white),
       decoration: generalInputDecoration("Email"),
@@ -89,15 +91,15 @@ class _LoginPageState extends State<LoginPage> {
     return TextFormField(
       validator: (value) {
         if (value!.isEmpty) {
-          return "Bilgileri Eksiksiz Doldurunuz";
+          return "Password can't be blank";
         }
       },
       onSaved: (value) {
-        password = value!;
+        Password = value!;
       },
       obscureText: true,
       style: TextStyle(color: Colors.white),
-      decoration: generalInputDecoration("Şifre"),
+      decoration: generalInputDecoration("Password"),
     );
   }
 
@@ -106,7 +108,7 @@ class _LoginPageState extends State<LoginPage> {
       child: TextButton(
         onPressed: () => Navigator.pushNamed(context, "/signUp"),
         child: generalText(
-          "Kayıt Ol",
+          "Sign Up",
           GeneralColors.textButtonColor,
         ),
       ),
@@ -114,9 +116,12 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Center signInButton() {
+    final authService = Provider.of<IAuthService>(context, listen: false);
     return Center(
       child: TextButton(
-        onPressed: () => signIn(),
+        onPressed: () {
+          signIn(authService);
+        },
         child: Container(
           height: 50,
           width: 150,
@@ -126,23 +131,20 @@ class _LoginPageState extends State<LoginPage> {
             color: Color(0xff31274F),
           ),
           child: Center(
-            child: generalText("Giriş Yap", GeneralColors.loginButtonTextColor),
+            child: generalText("Sign In", GeneralColors.loginButtonTextColor),
           ),
         ),
       ),
     );
   }
 
-  Future<void> signIn() async {
+  Future<void> signIn(IAuthService authService) async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+    }
     try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      if (userCredential.user != null) {
-        Navigator.pushNamed(context, "/audioRecord");
-      }
+      await authService.signInEmailAndPassword(
+          email: Email, password: Password);
     } catch (e) {
       showDialog(
         context: context,
@@ -168,8 +170,8 @@ class _LoginPageState extends State<LoginPage> {
     return Center(
       child: InkWell(
         onTap: () {
-          AuthService().signInWithGoogle().then(
-                (value) => Navigator.pushNamed(context, "/audioRecord"),
+          GoogleService().signInWithGoogle().then(
+                (value) => Navigator.pushNamed(context, "/home"),
               );
         },
         child: Image.asset('assets/images/google.png'),

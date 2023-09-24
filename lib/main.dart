@@ -1,10 +1,16 @@
-import 'package:audio_recorder/View/audio_record_page.dart';
+import 'package:audio_recorder/View/home_page.dart';
 import 'package:audio_recorder/View/sign_up_page.dart';
+import 'package:audio_recorder/Widgets/auth_widget_builder.dart';
+import 'package:audio_recorder/services/auth_service.dart';
+import 'package:audio_recorder/services/i_auth_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'View/home_screen.dart';
 import 'View/login_page.dart';
+import 'Widgets/auth_route_widget.dart';
 import 'firebase_options.dart';
+import 'package:provider/provider.dart';
+
+import 'model/user_model.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,18 +25,30 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      routes: {
-        "/loginPage": (context) => LoginPage(),
-        "/signUp": (context) => SignUpPage(),
-        "/audioRecord": (context) => AudioRecordPage(),
-      },
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return MultiProvider(
+      providers: [
+        Provider<IAuthService>(
+          create: (_) => AuthService(),
+        )
+      ],
+      child: AuthWidgetBuilder(
+        onPageBuilder: (context, AsyncSnapshot<UserModel?> snapShot) =>
+            MaterialApp(
+          title: 'Flutter Audio Recorder',
+          debugShowCheckedModeBanner: false,
+          routes: {
+            "/loginPage": (context) => LoginPage(),
+            "/signUp": (context) => SignUpPage(),
+            "/home": (context) => HomePage(),
+          },
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          home: AuthRoute(
+            snapShot: snapShot,
+          ),
+        ),
       ),
-      home: HomeScreen(),
     );
   }
 }
