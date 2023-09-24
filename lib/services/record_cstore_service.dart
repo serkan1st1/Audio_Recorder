@@ -31,7 +31,10 @@ class RecordService {
 
   //Data
   Stream<QuerySnapshot> getRecords() {
-    var ref = _firestore.collection("Records").snapshots();
+    var ref = _firestore
+        .collection("Records")
+        .orderBy('date', descending: true)
+        .snapshots();
     return ref;
   }
 }
